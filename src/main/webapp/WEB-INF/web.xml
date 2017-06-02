@@ -33,6 +33,11 @@
         <servlet-class>com.crunchify.jsp.servlet.HSSFCreate</servlet-class>
     </servlet>
     
+    <servlet>
+        <servlet-name>ChartServlet2</servlet-name>
+        <servlet-class>com.crunchify.jsp.servlet.ChartServlet2</servlet-class>
+    </servlet>
+    
     
     
     <servlet-mapping>
@@ -56,5 +61,9 @@
         <url-pattern>/HSSFCreate</url-pattern>
     </servlet-mapping>
     
+    <servlet-mapping>
+        <servlet-name>ChartServlet2</servlet-name>
+        <url-pattern>/ChartServlet2</url-pattern>
+    </servlet-mapping>
     
 </web-app>
