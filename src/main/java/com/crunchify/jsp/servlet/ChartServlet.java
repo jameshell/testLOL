@@ -51,9 +51,10 @@ public class ChartServlet extends HttpServlet {
             
             List<Colmena> colmenas= dao.findColmenaEntities();
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        int contColmenas=0;
+        int contColmenas=1;
          for (Colmena colmena : colmenas){
              dataset.addValue(colmena.getNumpanalesalimento(),"Colmena-"+String.valueOf(contColmenas),"Numero de Panales por Colmena");
+             contColmenas++;
          }
        
         JFreeChart chart = ChartFactory.createBarChart3D(
