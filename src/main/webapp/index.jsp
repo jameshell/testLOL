@@ -17,13 +17,6 @@ body {
 <title>Crunchify JSP Servlet Example</title>
 </head>
 <body>
-    <div align="center" style="margin-top: 50px;">
-        <form action="CrunchifyServlet">
-           Id Depto:  <input type="text" name="id" size="20px"> <br>
-           Nombre Depto:  <input type="text" name="nombre" size="20px"> <br><br>
-        <input type="submit" value="submit">
-        </form>
-     </div>
  
     <%
        if( request.getAttribute("departamentos")!=null){
