@@ -168,7 +168,7 @@ public class TecnicoJpaController implements Serializable {
             this.emf = Persistence.createEntityManagerFactory("catalogPU",properties);
             this.em = emf.createEntityManager();
         } catch (URISyntaxException ex) {
-            Logger.getLogger(TransaccionregistroJpaController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(TecnicoJpaController.class.getName()).log(Level.SEVERE, null, ex);
         }
         
        

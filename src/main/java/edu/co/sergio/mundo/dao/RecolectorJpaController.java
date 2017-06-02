@@ -234,7 +234,7 @@ public class RecolectorJpaController implements Serializable {
             this.emf = Persistence.createEntityManagerFactory("catalogPU",properties);
             this.em = emf.createEntityManager();
         } catch (URISyntaxException ex) {
-            Logger.getLogger(TransaccionregistroJpaController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RecolectorJpaController.class.getName()).log(Level.SEVERE, null, ex);
         }
         
        

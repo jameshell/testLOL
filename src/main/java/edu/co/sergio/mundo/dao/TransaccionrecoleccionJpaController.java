@@ -17,11 +17,18 @@ import edu.co.sergio.mundo.vo.Colmena;
 import edu.co.sergio.mundo.vo.Recolector;
 import edu.co.sergio.mundo.vo.Deposito;
 import edu.co.sergio.mundo.vo.Transaccionrecoleccion;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 
 /**
  *
@@ -29,9 +36,7 @@ import javax.persistence.EntityManagerFactory;
  */
 public class TransaccionrecoleccionJpaController implements Serializable {
 
-    public TransaccionrecoleccionJpaController(EntityManagerFactory emf) {
-        this.emf = emf;
-    }
+    private EntityManager em=null;
     private EntityManagerFactory emf = null;
 
     public EntityManager getEntityManager() {
@@ -42,7 +47,7 @@ public class TransaccionrecoleccionJpaController implements Serializable {
         if (transaccionrecoleccion.getDepositoCollection() == null) {
             transaccionrecoleccion.setDepositoCollection(new ArrayList<Deposito>());
         }
-        EntityManager em = null;
+        startOperation();
         try {
             em = getEntityManager();
             em.getTransaction().begin();
@@ -89,12 +94,13 @@ public class TransaccionrecoleccionJpaController implements Serializable {
         } finally {
             if (em != null) {
                 em.close();
+                emf.close();
             }
         }
     }
 
     public void edit(Transaccionrecoleccion transaccionrecoleccion) throws IllegalOrphanException, NonexistentEntityException, Exception {
-        EntityManager em = null;
+       startOperation();
         try {
             em = getEntityManager();
             em.getTransaction().begin();
@@ -173,12 +179,13 @@ public class TransaccionrecoleccionJpaController implements Serializable {
         } finally {
             if (em != null) {
                 em.close();
+                emf.close();
             }
         }
     }
 
     public void destroy(Integer id) throws IllegalOrphanException, NonexistentEntityException {
-        EntityManager em = null;
+        startOperation();
         try {
             em = getEntityManager();
             em.getTransaction().begin();
@@ -215,6 +222,7 @@ public class TransaccionrecoleccionJpaController implements Serializable {
         } finally {
             if (em != null) {
                 em.close();
+                emf.close();
             }
         }
     }
@@ -228,7 +236,7 @@ public class TransaccionrecoleccionJpaController implements Serializable {
     }
 
     private List<Transaccionrecoleccion> findTransaccionrecoleccionEntities(boolean all, int maxResults, int firstResult) {
-        EntityManager em = getEntityManager();
+       startOperation();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
             cq.select(cq.from(Transaccionrecoleccion.class));
@@ -240,20 +248,22 @@ public class TransaccionrecoleccionJpaController implements Serializable {
             return q.getResultList();
         } finally {
             em.close();
+            emf.close();
         }
     }
 
     public Transaccionrecoleccion findTransaccionrecoleccion(Integer id) {
-        EntityManager em = getEntityManager();
+        startOperation();
         try {
             return em.find(Transaccionrecoleccion.class, id);
         } finally {
             em.close();
+            emf.close();
         }
     }
 
     public int getTransaccionrecoleccionCount() {
-        EntityManager em = getEntityManager();
+        startOperation();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
             Root<Transaccionrecoleccion> rt = cq.from(Transaccionrecoleccion.class);
@@ -262,7 +272,31 @@ public class TransaccionrecoleccionJpaController implements Serializable {
             return ((Long) q.getSingleResult()).intValue();
         } finally {
             em.close();
+            emf.close();
         }
+    }
+    
+    protected void startOperation() { 
+        URI dbUri = null;
+        try {
+            dbUri = new URI(System.getenv("DATABASE_URL")); 
+            String username = dbUri.getUserInfo().split(":")[0];
+            String password = dbUri.getUserInfo().split(":")[1];
+            String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + ':' + dbUri.getPort() + dbUri.getPath();
+
+            Map<String, String> properties = new HashMap<String, String>();
+            properties.put("javax.persistence.jdbc.url", dbUrl);
+            properties.put("javax.persistence.jdbc.user", username );
+            properties.put("javax.persistence.jdbc.password", password );
+            properties.put("javax.persistence.jdbc.driver", "org.postgresql.Driver");
+            properties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect");
+            this.emf = Persistence.createEntityManagerFactory("catalogPU",properties);
+            this.em = emf.createEntityManager();
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(TransaccionrecoleccionJpaController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+       
     }
     
 }
